@@ -12,6 +12,13 @@ export default function GoalsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [frequencyFilter, setFrequencyFilter] = useState<'All' | 'Daily' | 'Weekly'>('All')
 
+  // state for the add goal modal form fields
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [newGoalName, setNewGoalName] = useState('')
+  const [newGoalCategory, setNewGoalCategory] = useState<Goal['category']>('Fitness')
+  const [newGoalFrequency, setNewGoalFrequency] = useState<Goal['frequency']>('Daily')
+  const [newGoalAccountability, setNewGoalAccountability] = useState<Goal['accountabilityLevel']>('Medium')
+
   // load goals from localStorage and attach calculated streaks
   useEffect(() => {
     loadGoals()
@@ -43,6 +50,29 @@ export default function GoalsPage() {
       deleteGoal(id)
       loadGoals()
     }
+  }
+  const handleAddGoal = () => {
+    // dont save if name is empty
+    if (!newGoalName.trim()) return
+    const goal: Goal = {
+      id: Date.now().toString(),
+      name: newGoalName.trim(),
+      category: newGoalCategory,
+      status: 'active',
+      frequency: newGoalFrequency,
+      startDate: new Date().toISOString().split('T')[0],
+      streak: 0,
+      urgencyLevel: 'normal',
+      accountabilityLevel: newGoalAccountability,
+    }
+    addGoal(goal)
+    // reset form fields after saving
+    setNewGoalName('')
+    setNewGoalCategory('Fitness')
+    setNewGoalFrequency('Daily')
+    setNewGoalAccountability('Medium')
+    setShowAddModal(false)
+    loadGoals()
   }
 
   // filter goals by frequency - all shows everything
@@ -157,7 +187,7 @@ export default function GoalsPage() {
       }}>
         <h1 style={{ fontSize: '22px', fontWeight: 'bold', color: '#333333' }}>Goals</h1>
         <button
-          onClick={() => {}}
+          onClick={() => setShowAddModal(true)}
           style={{
             width: '36px', height: '36px', borderRadius: '50%',
             backgroundColor: '#FE7F3C', border: 'none', cursor: 'pointer',
@@ -183,6 +213,110 @@ export default function GoalsPage() {
           </button>
         ))}
       </div>
+      {/* add goal modal - slides up from bottom */}
+{showAddModal && (
+  <div style={{
+    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1000,
+    display: 'flex', alignItems: 'flex-end', justifyContent: 'center'
+  }}>
+    <div style={{
+      backgroundColor: 'white', borderRadius: '20px 20px 0 0',
+      padding: '24px', width: '100%', maxWidth: '430px',
+      zIndex: 1001, position: 'relative'
+    }}>
+      <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#333333', marginBottom: '20px' }}>
+        add a new goal
+      </h2>
+
+      <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>goal name</p>
+      <input
+        value={newGoalName}
+        onChange={e => setNewGoalName(e.target.value)}
+        placeholder="e.g. go to the gym 5x a week"
+        style={{
+          width: '100%', padding: '12px 16px', borderRadius: '12px',
+          border: '1px solid #f0f0f0', fontSize: '14px', color: '#333333',
+          outline: 'none', marginBottom: '16px', boxSizing: 'border-box'
+        }}
+      />
+
+      <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>category</p>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+        {(['Fitness', 'Health', 'Mindset', 'Study', 'Other'] as Goal['category'][]).map(cat => (
+          <button
+            key={cat}
+            onClick={() => setNewGoalCategory(cat)}
+            style={{
+              padding: '8px 16px', borderRadius: '999px', fontSize: '13px',
+              fontWeight: 500, cursor: 'pointer', border: 'none',
+              backgroundColor: newGoalCategory === cat ? '#FE7F3C' : '#f5f5f5',
+              color: newGoalCategory === cat ? 'white' : '#333333',
+            }}>
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>frequency</p>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        {(['Daily', 'Weekly'] as Goal['frequency'][]).map(freq => (
+          <button
+            key={freq}
+            onClick={() => setNewGoalFrequency(freq)}
+            style={{
+              flex: 1, padding: '8px', borderRadius: '999px', fontSize: '13px',
+              fontWeight: 500, cursor: 'pointer', border: 'none',
+              backgroundColor: newGoalFrequency === freq ? '#FE7F3C' : '#f5f5f5',
+              color: newGoalFrequency === freq ? 'white' : '#333333',
+            }}>
+            {freq}
+          </button>
+        ))}
+      </div>
+
+      <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>accountability level</p>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+        {(['Low', 'Medium', 'High'] as Goal['accountabilityLevel'][]).map(level => (
+          <button
+            key={level}
+            onClick={() => setNewGoalAccountability(level)}
+            style={{
+              flex: 1, padding: '8px', borderRadius: '999px', fontSize: '13px',
+              fontWeight: 500, cursor: 'pointer', border: 'none',
+              backgroundColor: newGoalAccountability === level ? '#FE7F3C' : '#f5f5f5',
+              color: newGoalAccountability === level ? 'white' : '#333333',
+            }}>
+            {level}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: '12px' }}>
+        <button
+          onClick={() => setShowAddModal(false)}
+          style={{
+            flex: 1, padding: '14px', borderRadius: '999px',
+            backgroundColor: '#f5f5f5', border: 'none',
+            color: '#333333', fontWeight: 600, cursor: 'pointer'
+          }}>
+          cancel
+        </button>
+        <button
+          onClick={handleAddGoal}
+          style={{
+            flex: 1, padding: '14px', borderRadius: '999px',
+            backgroundColor: newGoalName.trim() ? '#FE7F3C' : '#f0f0f0',
+            border: 'none',
+            color: newGoalName.trim() ? 'white' : '#999999',
+            fontWeight: 600, cursor: 'pointer'
+          }}>
+          add goal
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* goals list */}
       <div style={{ padding: '0 24px', flex: 1 }}>
