@@ -151,7 +151,7 @@ const handleSaveEdit = () => {
               {goal.streak > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
               {/* fire icon from phosphor indicates an active streak */}
-              <Fire size={12} color="#FE7F3C" weight="fill" />
+              <FireIcon size={12} color="#FE7F3C" weight="fill" />
               <p style={{ fontSize: '11px', color: '#FE7F3C', margin: 0 }}>
                 {goal.streak} day streak
               </p>
