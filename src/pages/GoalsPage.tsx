@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { House, Target, ChatCircle, Notebook, Gear, Plus, Trash, Fire } from '@phosphor-icons/react'
-import { getGoals, addGoal, deleteGoal, addLog } from '../utils/storage'
+import { House, Target, ChatCircle, Notebook, Gear, Plus, Trash, Fire, PencilSimple } from '@phosphor-icons/react'
 import { calculateStreak, isCompletedToday } from '../utils/streak'
 import type { Goal } from '../types/index'
+import { getGoals, addGoal, updateGoal, deleteGoal, addLog } from '../utils/storage'
 
 export default function GoalsPage() {
   const navigate = useNavigate()
@@ -19,12 +19,20 @@ export default function GoalsPage() {
   const [newGoalFrequency, setNewGoalFrequency] = useState<Goal['frequency']>('Daily')
   const [newGoalAccountability, setNewGoalAccountability] = useState<Goal['accountabilityLevel']>('Medium')
 
+  // state for the edit goal modal - pre-filled with existing goal values
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null)
+  const [editGoalName, setEditGoalName] = useState('')
+  const [editGoalCategory, setEditGoalCategory] = useState<Goal['category']>('Fitness')
+  const [editGoalFrequency, setEditGoalFrequency] = useState<Goal['frequency']>('Daily')
+  const [editGoalAccountability, setEditGoalAccountability] = useState<Goal['accountabilityLevel']>('Medium')
+
   // load goals from localStorage and attach calculated streaks
   useEffect(() => {
     loadGoals()
   }, [])
 
   const loadGoals = () => {
+    // reads from localStorage and recalculates streaks on every load
     const stored = getGoals()
     const withStreaks = stored.map(g => ({
       ...g,
@@ -74,11 +82,34 @@ export default function GoalsPage() {
     setShowAddModal(false)
     loadGoals()
   }
+  // opens the edit modal pre-filled with the goal's current values
+const handleStartEdit = (goal: Goal) => {
+  setEditingGoal(goal)
+  setEditGoalName(goal.name)
+  setEditGoalCategory(goal.category)
+  setEditGoalFrequency(goal.frequency)
+  setEditGoalAccountability(goal.accountabilityLevel)
+}
 
-  // filter goals by frequency - all shows everything
+const handleSaveEdit = () => {
+  if (!editingGoal || !editGoalName.trim()) return
+  const updated: Goal = {
+    ...editingGoal,
+    name: editGoalName.trim(),
+    category: editGoalCategory,
+    frequency: editGoalFrequency,
+    accountabilityLevel: editGoalAccountability,
+  }
+  // replaces the existing goal object in localStorage
+  updateGoal(updated)
+  setEditingGoal(null)
+  loadGoals()
+}
+
+  // filter goals by frequency -   all show everything, daily shows daily, weekly shows weekly
   const filteredGoals = frequencyFilter === 'All'
-    ? goals
-    : goals.filter(g => g.frequency === frequencyFilter)
+  ? goals
+  : goals.filter(g => g.frequency === frequencyFilter)
 
   // split into three sections for urgency-first ordering
   const almostOver = filteredGoals.filter(g => g.status === 'almost-over')
@@ -118,13 +149,14 @@ export default function GoalsPage() {
                 {goal.name}
               </span>
               {goal.streak > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                  <Fire size={12} color="#FE7F3C" weight="fill" />
-                  <p style={{ fontSize: '11px', color: '#FE7F3C', margin: 0 }}>
-                    {goal.streak} day streak
-                  </p>
-                </div>
-              )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+              {/* fire icon from phosphor indicates an active streak */}
+              <Fire size={12} color="#FE7F3C" weight="fill" />
+              <p style={{ fontSize: '11px', color: '#FE7F3C', margin: 0 }}>
+                {goal.streak} day streak
+              </p>
+            </div>
+          )}
             </div>
           </div>
           <span style={{
@@ -166,6 +198,15 @@ export default function GoalsPage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
                 <Trash size={16} color="#ff4444" />
+                <button
+                onClick={() => handleStartEdit(goal)}
+                style={{
+                  width: '44px', height: '44px', borderRadius: '999px',
+                  backgroundColor: '#f5f5f5', border: 'none', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                <PencilSimple size={16} color="#333333" />
+              </button>
               </button>
             </div>
           </div>
@@ -257,7 +298,86 @@ export default function GoalsPage() {
           </button>
         ))}
       </div>
+      {/* edit goal modal - same structure as add but pre-filled */}
+      {editingGoal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1000,
+          display: 'flex', alignItems: 'flex-end', justifyContent: 'center'
+        }}>
+          <div style={{
+            backgroundColor: 'white', borderRadius: '20px 20px 0 0',
+            padding: '24px', width: '100%', maxWidth: '430px',
+            zIndex: 1001
+          }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#333333', marginBottom: '20px' }}>
+              edit goal
+            </h2>
 
+            <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>goal name</p>
+            <input
+              value={editGoalName}
+              onChange={e => setEditGoalName(e.target.value)}
+              style={{
+                width: '100%', padding: '12px 16px', borderRadius: '12px',
+                border: '1px solid #f0f0f0', fontSize: '14px', color: '#333333',
+                outline: 'none', marginBottom: '16px', boxSizing: 'border-box'
+              }}
+            />
+
+            <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>category</p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+              {(['Fitness', 'Health', 'Mindset', 'Study', 'Other'] as Goal['category'][]).map(cat => (
+                <button key={cat} onClick={() => setEditGoalCategory(cat)} style={{
+                  padding: '8px 16px', borderRadius: '999px', fontSize: '13px',
+                  fontWeight: 500, cursor: 'pointer', border: 'none',
+                  backgroundColor: editGoalCategory === cat ? '#FE7F3C' : '#f5f5f5',
+                  color: editGoalCategory === cat ? 'white' : '#333333',
+                }}>{cat}</button>
+              ))}
+            </div>
+
+            <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>frequency</p>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              {(['Daily', 'Weekly'] as Goal['frequency'][]).map(freq => (
+                <button key={freq} onClick={() => setEditGoalFrequency(freq)} style={{
+                  flex: 1, padding: '8px', borderRadius: '999px', fontSize: '13px',
+                  fontWeight: 500, cursor: 'pointer', border: 'none',
+                  backgroundColor: editGoalFrequency === freq ? '#FE7F3C' : '#f5f5f5',
+                  color: editGoalFrequency === freq ? 'white' : '#333333',
+                }}>{freq}</button>
+              ))}
+            </div>
+
+            <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>accountability level</p>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+              {(['Low', 'Medium', 'High'] as Goal['accountabilityLevel'][]).map(level => (
+                <button key={level} onClick={() => setEditGoalAccountability(level)} style={{
+                  flex: 1, padding: '8px', borderRadius: '999px', fontSize: '13px',
+                  fontWeight: 500, cursor: 'pointer', border: 'none',
+                  backgroundColor: editGoalAccountability === level ? '#FE7F3C' : '#f5f5f5',
+                  color: editGoalAccountability === level ? 'white' : '#333333',
+                }}>{level}</button>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setEditingGoal(null)} style={{
+                flex: 1, padding: '14px', borderRadius: '999px',
+                backgroundColor: '#f5f5f5', border: 'none',
+                color: '#333333', fontWeight: 600, cursor: 'pointer'
+              }}>cancel</button>
+              <button onClick={handleSaveEdit} style={{
+                flex: 1, padding: '14px', borderRadius: '999px',
+                backgroundColor: editGoalName.trim() ? '#FE7F3C' : '#f0f0f0',
+                border: 'none',
+                color: editGoalName.trim() ? 'white' : '#999999',
+                fontWeight: 600, cursor: 'pointer'
+              }}>save changes</button>
+            </div>
+          </div>
+        </div>
+      )}
       <p style={{ fontSize: '13px', color: '#999999', marginBottom: '6px' }}>frequency</p>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
         {(['Daily', 'Weekly'] as Goal['frequency'][]).map(freq => (
