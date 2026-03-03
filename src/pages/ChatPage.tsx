@@ -88,8 +88,8 @@ export default function ChatPage() {
   
       const aiResponse = await sendToAI(history)
   
-      // safety net - if AI says it created a goal but returned action null
-      // this handles cases where the AI confirms verbally but forgets the action field
+      // safety net - LLMs are not perfectly reliable at following JSON format instructions
+     // if the AI says it created a goal but returns action null, extract the goals name from the message
       const confirmationPhrases = ["i've added", "i've set", "i've created", "goal has been added", "added your goal", "set that goal"]
       const messageLower = aiResponse.message.toLowerCase()
       const saidItCreated = confirmationPhrases.some(p => messageLower.includes(p))
