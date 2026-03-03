@@ -129,7 +129,9 @@ export default function ChatPage() {
         }
       }
   
-      // if the AI returned a createGoal action, silently add it to localStorage
+      // structured output pattern - the AI returns both a message and an optional action
+     // the action field triggers real app changes silently without the user seeing any JSON
+
       if (aiResponse.action?.type === 'createGoal') {
         const { addGoal } = await import('../utils/storage')
         addGoal({
