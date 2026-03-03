@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { House, Target, ChatCircle, Notebook, Gear, Microphone, PaperPlaneTilt } from '@phosphor-icons/react'
 import ReactMarkdown from 'react-markdown'
+import { sendMessage as sendToAI, buildSystemPrompt } from '../services/openai'
+import { getJournalEntries, getPreferences, getGoals } from '../utils/storage'
+import { calculateStreak } from '../utils/streak'
 
 // message type used for the chat history array
 type Message = {
@@ -50,6 +53,116 @@ export default function ChatPage() {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
+  
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: input.trim(),
+      timestamp: new Date()
+    }
+  
+    setMessages(prev => [...prev, userMessage])
+    setInput('')
+    setIsLoading(true)
+  
+    try {
+      // read journal entries and goals to inject into system prompt as context
+      const journalEntries = getJournalEntries()
+        .slice(0, 3)
+        .map(e => `${e.date}: ${e.content}`)
+        .join('\n')
+  
+      const activeGoals = getGoals()
+        .filter(g => g.status === 'active' || g.status === 'almost-over')
+        .map(g => `- ${g.name} (${g.category}, streak: ${calculateStreak(g.id)} days)`)
+        .join('\n')
+  
+      const prefs = getPreferences()
+  
+      // build full conversation history with system prompt prepended
+      const history = [
+        { role: 'system' as const, content: buildSystemPrompt(prefs.tone, journalEntries, activeGoals) },
+        ...messages.map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+        { role: 'user' as const, content: input.trim() }
+      ]
+  
+      const aiResponse = await sendToAI(history)
+  
+      // safety net - if AI says it created a goal but returned action null
+      // this handles cases where the AI confirms verbally but forgets the action field
+      const confirmationPhrases = ["i've added", "i've set", "i've created", "goal has been added", "added your goal", "set that goal"]
+      const messageLower = aiResponse.message.toLowerCase()
+      const saidItCreated = confirmationPhrases.some(p => messageLower.includes(p))
+  
+      if (saidItCreated && !aiResponse.action) {
+        let goalName = ''
+  
+        // try to extract goal name from bold markdown first
+        const currentBoldMatch = aiResponse.message.match(/\*\*(.*?)\*\*/)
+        if (currentBoldMatch) goalName = currentBoldMatch[1]
+  
+        // fall back to "goal to X" pattern
+        if (!goalName) {
+          const goalToMatch = aiResponse.message.match(/goal to (.+?)(?:\.|!|,|$)/i)
+          if (goalToMatch) goalName = goalToMatch[1].trim()
+        }
+  
+        // fall back to previous assistant message bold text
+        if (!goalName) {
+          const lastAssistantMsg = messages
+            .filter(m => m.role === 'assistant')
+            .slice(-1)[0]?.content || ''
+          const boldMatch = lastAssistantMsg.match(/\*\*(.*?)\*\*/)
+          if (boldMatch) goalName = boldMatch[1]
+        }
+  
+        if (goalName) {
+          aiResponse.action = {
+            type: 'createGoal',
+            data: {
+              name: goalName,
+              category: 'Other',
+              frequency: 'Daily',
+              accountabilityLevel: 'Medium'
+            }
+          }
+        }
+      }
+  
+      // if the AI returned a createGoal action, silently add it to localStorage
+      if (aiResponse.action?.type === 'createGoal') {
+        const { addGoal } = await import('../utils/storage')
+        addGoal({
+          id: Date.now().toString(),
+          name: aiResponse.action.data.name ?? 'new goal',
+          category: aiResponse.action.data.category ?? 'Other',
+          status: 'active',
+          frequency: aiResponse.action.data.frequency ?? 'Daily',
+          startDate: new Date().toISOString().split('T')[0],
+          streak: 0,
+          urgencyLevel: 'normal',
+          accountabilityLevel: aiResponse.action.data.accountabilityLevel ?? 'Medium',
+        })
+      }
+  
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant' as const,
+        content: aiResponse.message,
+        timestamp: new Date()
+      }])
+    } catch {
+      // show fallback message if API call fails
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant' as const,
+        content: "sorry, i couldn't connect right now. try again.",
+        timestamp: new Date()
+      }])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
     const userMessage: Message = {
       id: Date.now().toString(),
