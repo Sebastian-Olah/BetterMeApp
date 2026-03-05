@@ -34,19 +34,19 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // restore conversation history from localStorage on mount
+  // restores conversation history from localStorage on mount
   const [messages, setMessages] = useState<Message[]>(() => {
     const stored = localStorage.getItem(CHAT_STORAGE_KEY)
     return stored ? JSON.parse(stored) : initialMessages
   })
 
-  // scroll to bottom whenever messages update
+  // scrolls to bottom whenever messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // persist conversation history to localStorage on every change
-  // same key used by voice screen so history is shared
+  // persists conversation history to localStorage on every change
+ //  same key is being used by voice screen so history is shared across both input methods
   useEffect(() => {
     localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages))
   }, [messages])
