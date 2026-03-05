@@ -67,6 +67,7 @@ export default function ChatPage() {
   
     try {
       // read journal entries and goals to inject into system prompt as context
+     // this makes the AI aware of what the user has been working on before the conversation starts
       const journalEntries = getJournalEntries()
         .slice(0, 3)
         .map(e => `${e.date}: ${e.content}`)
