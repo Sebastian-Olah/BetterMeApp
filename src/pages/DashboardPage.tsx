@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { House, Target, ChatCircle, Notebook, Gear, Fire } from '@phosphor-icons/react'
+import { House, Target, ChatCircle, Notebook, Gear, Fire } from '@phosphor-icons/react'// phosphor icons used as react components so colour and weight can be controlled via props
+                                                                              // svg file imports were tried first but had hardcoded fill colours that overrode css filters
 import { getGoals, addLog } from '../utils/storage'
 import { calculateStreak, isCompletedToday } from '../utils/streak'
 import type { Goal } from '../types/index'

@@ -33,6 +33,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  
 
   // restores conversation history from localStorage on mount
   const [messages, setMessages] = useState<Message[]>(() => {
