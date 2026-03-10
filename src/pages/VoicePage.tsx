@@ -235,6 +235,69 @@ export default function VoicePage() {
         ].map(item => {
           const isActive = location.pathname === item.path
           const Icon = item.icon
+
+          useEffect(() => {
+            const SpeechRecognition =
+              (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+          
+            if (!SpeechRecognition) {
+              setTranscript('voice input is not supported. please use chrome.')
+              return
+            }
+          
+            const recognition = new SpeechRecognition()
+          
+            // continuous false prevents mobile chrome from duplicating results
+            // the api fires onresult once per utterance then fires onend
+            // the onend handler restarts recognition immediately to keep it going
+            recognition.continuous = false
+            recognition.interimResults = false
+            recognition.lang = 'en-US'
+          
+            recognition.onresult = (event: any) => {
+              if (isSendingRef.current) return
+          
+              // only process new final results using event.resultIndex
+              let finalTranscript = ''
+              for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                  finalTranscript += event.results[i][0].transcript
+                }
+              }
+          
+              if (finalTranscript) {
+                // combine with any paused text saved before the pause
+                const combined = pausedTextRef.current
+                  ? pausedTextRef.current + ' ' + finalTranscript
+                  : finalTranscript
+                pausedTextRef.current = combined.trim()
+                setTranscript(combined.trim())
+              }
+            }
+          
+            recognition.onend = () => {
+              // if still supposed to be listening, restart automatically
+              // uses isListeningRef not isListening state because this handler is in a closure
+              // and cannot read the current value of state - it would always see the initial false
+              if (isListeningRef.current && !isSendingRef.current) {
+                try {
+                  recognition.start()
+                } catch {
+                  setIsListening(false)
+                  isListeningRef.current = false
+                }
+              } else {
+                setIsListening(false)
+                isListeningRef.current = false
+              }
+            }
+          
+            recognitionRef.current = recognition
+          
+            return () => {
+              recognition.stop()
+            }
+          }, [])
           return (
             <button
               key={item.path}
