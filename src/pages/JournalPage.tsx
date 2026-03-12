@@ -167,6 +167,9 @@ export default function JournalPage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
               <p style={{ fontSize: '12px', color: '#999999' }}>{entry.date}</p>
               {editingId !== entry.id && (
+              // inline edit mode keeps editing within the card
+                // avoids navigating to a separate edit screen which adds friction
+
                 <button
                   onClick={() => handleStartEdit(entry)}
                   style={{
