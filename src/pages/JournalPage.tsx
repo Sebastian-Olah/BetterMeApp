@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { House, Target, ChatCircle, Notebook, Gear, Plus, PencilSimple, Check, X, Camera} from '@phosphor-icons/react'
+import { House, Target, ChatCircle, Notebook, Gear, Plus, PencilSimple, Check, X, Camera } from '@phosphor-icons/react'
 import { getJournalEntries, saveJournalEntries } from '../utils/storage'
 import type { JournalEntry } from '../types/index'
 
@@ -14,11 +14,13 @@ export default function JournalPage() {
   // editing state - tracks which entry is being edited
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
+
   // photo state for new entry and edit mode
-const [newPhoto, setNewPhoto] = useState<string | undefined>(undefined)
-const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
+  const [newPhoto, setNewPhoto] = useState<string | undefined>(undefined)
+  const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
 
   // load entries from localStorage on mount
+  // useEffect with empty array runs once when the component first appears on screen
   useEffect(() => {
     setEntries(getJournalEntries())
   }, [])
@@ -26,6 +28,7 @@ const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
   const today = new Date().toISOString().split('T')[0]
 
   // checks if an entry already exists for today
+  // prevents duplicate entries for the same day
   const hasEntryToday = entries.some(e => e.date === today)
 
   const handleSave = () => {
@@ -36,6 +39,7 @@ const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
       content: newContent.trim(),
       imagePath: newPhoto,
     }
+    // prepend new entry so newest shows first
     const updated = [newEntry, ...entries]
     saveJournalEntries(updated)
     setEntries(updated)
@@ -44,41 +48,30 @@ const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
     setShowComposer(false)
   }
 
-    const newEntry: JournalEntry = {
-      id: Date.now().toString(),
-      date: today,
-      content: newContent.trim(),
-    }
-
-    // prepend new entry so newest shows first
-    const updated = [newEntry, ...entries]
-    saveJournalEntries(updated)
-    setEntries(updated)
-    setNewContent('')
-    setShowComposer(false)
-  }
-
   const handleStartEdit = (entry: JournalEntry) => {
     setEditingId(entry.id)
     setEditContent(entry.content)
+    setEditPhoto(entry.imagePath)
   }
 
   const handleSaveEdit = (id: string) => {
     if (!editContent.trim()) return
     const updated = entries.map(e =>
-      e.id === id ? { ...e, content: editContent.trim() } : e
+      e.id === id ? { ...e, content: editContent.trim(), imagePath: editPhoto ?? e.imagePath } : e
     )
     saveJournalEntries(updated)
     setEntries(updated)
     setEditingId(null)
+    setEditPhoto(undefined)
   }
 
   const handleCancelEdit = () => {
     setEditingId(null)
     setEditContent('')
+    setEditPhoto(undefined)
   }
 
-    // converts the selected image to a base64 string using FileReader
+  // converts the selected image to a base64 string using FileReader
   // base64 strings can be stored directly in localStorage alongside the entry
   const handlePhotoCapture = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -151,9 +144,30 @@ const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
               lineHeight: '1.6', boxSizing: 'border-box'
             }}
           />
-          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+
+          {/* hidden file input - capture environment opens rear camera on mobile */}
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            id="new-photo-input"
+            style={{ display: 'none' }}
+            onChange={e => handlePhotoCapture(e, 'new')}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px', marginBottom: '10px' }}>
+            <label htmlFor="new-photo-input" style={{ cursor: 'pointer' }}>
+              <Camera size={22} color="#999999" />
+            </label>
+            {newPhoto && (
+              <img src={newPhoto} alt="preview" style={{
+                width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover'
+              }} />
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
             <button
-              onClick={() => { setShowComposer(false); setNewContent('') }}
+              onClick={() => { setShowComposer(false); setNewContent(''); setNewPhoto(undefined) }}
               style={{
                 flex: 1, padding: '12px', borderRadius: '999px',
                 backgroundColor: '#f5f5f5', border: 'none',
@@ -196,13 +210,11 @@ const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
               padding: '16px', borderRadius: '12px', marginBottom: '12px',
               border: '1px solid #f0f0f0', backgroundColor: 'white'
             }}>
+
             {/* date and edit button row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
               <p style={{ fontSize: '12px', color: '#999999' }}>{entry.date}</p>
               {editingId !== entry.id && (
-              // inline edit mode keeps editing within the card
-                // avoids navigating to a separate edit screen which adds friction
-
                 <button
                   onClick={() => handleStartEdit(entry)}
                   style={{
@@ -214,7 +226,8 @@ const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
             </div>
 
             {editingId === entry.id ? (
-              // inline edit mode - textarea pre-filled with existing content
+              // inline edit mode keeps editing within the card
+              // avoids navigating to a separate screen which adds friction
               <>
                 <textarea
                   value={editContent}
@@ -227,7 +240,18 @@ const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
                     lineHeight: '1.6', boxSizing: 'border-box'
                   }}
                 />
-                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+
+                {/* photo capture available in edit mode too */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  id="edit-photo-input"
+                  style={{ display: 'none' }}
+                  onChange={e => handlePhotoCapture(e, 'edit')}
+                />
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
                   <button
                     onClick={() => handleSaveEdit(entry.id)}
                     style={{
@@ -246,6 +270,14 @@ const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
                     }}>
                     <X size={16} color="#999999" />
                   </button>
+                  <label htmlFor="edit-photo-input" style={{ cursor: 'pointer', marginLeft: '4px' }}>
+                    <Camera size={20} color="#999999" />
+                  </label>
+                  {editPhoto && (
+                    <img src={editPhoto} alt="preview" style={{
+                      width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover'
+                    }} />
+                  )}
                 </div>
               </>
             ) : (
