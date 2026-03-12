@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { House, Target, ChatCircle, Notebook, Gear, Plus, PencilSimple, Check, X } from '@phosphor-icons/react'
+import { House, Target, ChatCircle, Notebook, Gear, Plus, PencilSimple, Check, X, Camera} from '@phosphor-icons/react'
 import { getJournalEntries, saveJournalEntries } from '../utils/storage'
 import type { JournalEntry } from '../types/index'
 
@@ -14,6 +14,9 @@ export default function JournalPage() {
   // editing state - tracks which entry is being edited
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
+  // photo state for new entry and edit mode
+const [newPhoto, setNewPhoto] = useState<string | undefined>(undefined)
+const [editPhoto, setEditPhoto] = useState<string | undefined>(undefined)
 
   // load entries from localStorage on mount
   useEffect(() => {
@@ -27,6 +30,19 @@ export default function JournalPage() {
 
   const handleSave = () => {
     if (!newContent.trim()) return
+    const newEntry: JournalEntry = {
+      id: Date.now().toString(),
+      date: today,
+      content: newContent.trim(),
+      imagePath: newPhoto,
+    }
+    const updated = [newEntry, ...entries]
+    saveJournalEntries(updated)
+    setEntries(updated)
+    setNewContent('')
+    setNewPhoto(undefined)
+    setShowComposer(false)
+  }
 
     const newEntry: JournalEntry = {
       id: Date.now().toString(),
@@ -60,6 +76,23 @@ export default function JournalPage() {
   const handleCancelEdit = () => {
     setEditingId(null)
     setEditContent('')
+  }
+
+    // converts the selected image to a base64 string using FileReader
+  // base64 strings can be stored directly in localStorage alongside the entry
+  const handlePhotoCapture = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    mode: 'new' | 'edit'
+  ) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const base64 = reader.result as string
+      if (mode === 'new') setNewPhoto(base64)
+      else setEditPhoto(base64)
+    }
+    reader.readAsDataURL(file)
   }
 
   return (
