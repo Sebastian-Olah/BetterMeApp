@@ -103,6 +103,8 @@ export default function DashboardPage() {
         </p>
 
         {goals.length === 0 && (
+          // empty state shown when no goals exist yet
+          // directs user to chat screen to create their first goal with the AI
           <div style={{ textAlign: 'center', marginTop: '40px' }}>
             <p style={{ fontSize: '14px', color: '#999999', marginBottom: '16px' }}>
               no goals yet — talk to your coach to get started
