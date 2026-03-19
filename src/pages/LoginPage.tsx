@@ -1,9 +1,17 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // login screen — first point of contact for the user
 // social login buttons navigate directly to dashboard as auth is out of scope
 export default function LoginPage() {
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleLogin = () => {
+    setIsLoading(true)
+    // small delay to show the loading state before navigating
+    setTimeout(() => navigate('/personalisation'), 300)
+  }
 
   return (
     <div style={{
@@ -41,7 +49,7 @@ export default function LoginPage() {
       {/* social login buttons */}
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
         <button
-          onClick={() => navigate('/personalisation')}
+          onClick={handleLogin}
           style={{
             width: '100%', padding: '14px', borderRadius: '12px',
             border: '1px solid #f0f0f0', backgroundColor: 'white',
@@ -55,7 +63,7 @@ export default function LoginPage() {
         </button>
 
         <button
-          onClick={() => navigate('/personalisation')}
+          onClick={handleLogin}
           style={{
             width: '100%', padding: '14px', borderRadius: '12px',
             border: '1px solid #f0f0f0', backgroundColor: 'white',
@@ -69,7 +77,7 @@ export default function LoginPage() {
         </button>
 
         <button
-          onClick={() => navigate('/personalisation')}
+          onClick={handleLogin}
           style={{
             width: '100%', padding: '14px', borderRadius: '12px',
             border: '1px solid #f0f0f0', backgroundColor: 'white',
@@ -84,21 +92,21 @@ export default function LoginPage() {
 
       {/* primary login button */}
       <button
-        onClick={() => navigate('/personalisation')}
+        onClick={handleLogin}
         style={{
           width: '100%', padding: '16px', borderRadius: '999px',
           backgroundColor: '#FE7F3C', border: 'none',
           color: 'white', fontSize: '16px', fontWeight: 600,
           cursor: 'pointer', marginBottom: '16px'
         }}>
-        login
+        {isLoading ? 'loading...' : 'login'}
       </button>
 
       {/* register link */}
       <p style={{ fontSize: '14px', color: '#999999' }}>
         don't have an account?{' '}
         <span
-          onClick={() => navigate('/personalisation')}
+          onClick={handleLogin}
           style={{ color: '#FE7F3C', cursor: 'pointer', fontWeight: 500 }}>
           register
         </span>
