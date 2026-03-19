@@ -11,7 +11,8 @@ export default function DashboardPage() {
   const location = useLocation()
   const [goals, setGoals] = useState<Goal[]>([])
 
-  // load goals with calculated streaks on mount
+  // reload goals every time the dashboard becomes the active screen
+  // this ensures completions made on other screens are reflected immediately
   useEffect(() => {
     const stored = getGoals()
     const withStreaks = stored.map(g => ({
@@ -19,7 +20,7 @@ export default function DashboardPage() {
       streak: calculateStreak(g.id)
     }))
     setGoals(withStreaks)
-  }, [])
+  }, [location])
 
   // calculate today's completion progress for the progress bar
   const activeGoals = goals.filter(g => g.status === 'active' || g.status === 'almost-over')
