@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { House, Target, ChatCircle, Notebook, Gear, Microphone, PaperPlaneTilt } from '@phosphor-icons/react'
+import { House, Target, ChatCircle, Notebook, Gear, Microphone, PaperPlaneTilt, Trash } from '@phosphor-icons/react'
 import ReactMarkdown from 'react-markdown'
 import { sendMessage as sendToAI, buildSystemPrompt } from '../services/openai'
 import { getJournalEntries, getPreferences, getGoals } from '../utils/storage'
@@ -168,28 +168,12 @@ export default function ChatPage() {
     }
   }
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input.trim(),
-      timestamp: new Date()
+  const handleClearChat = () => {
+    // removes chat history from localStorage and resets to initial greeting
+    if (window.confirm('clear chat history?')) {
+      localStorage.removeItem(CHAT_STORAGE_KEY)
+      setMessages(initialMessages)
     }
-
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
-
-    // ai integration added in later commit
-    // placeholder response for now
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: "i'm getting set up - ai integration coming soon!",
-        timestamp: new Date()
-      }])
-      setIsLoading(false)
-    }, 1000)
   }
 
   return (
@@ -209,6 +193,12 @@ export default function ChatPage() {
           </h1>
           <p style={{ fontSize: '12px', color: '#999999' }}>your personal AI coach</p>
         </div>
+        <button
+          onClick={handleClearChat}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+        >
+          <Trash size={20} color="#999999" />
+        </button>
       </div>
 
       {/* scrollable messages area */}
@@ -261,7 +251,7 @@ export default function ChatPage() {
         <span
           onClick={() => navigate('/voice')}
           style={{ fontSize: '13px', color: '#FE7F3C', cursor: 'pointer', fontWeight: 500 }}>
-          talk to me ->
+          {'talk to me ->'}
         </span>
       </div>
 
