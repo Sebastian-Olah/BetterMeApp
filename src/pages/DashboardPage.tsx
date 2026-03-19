@@ -22,6 +22,14 @@ export default function DashboardPage() {
     setGoals(withStreaks)
   }, [location])
 
+  // greeting changes based on time of day
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'good morning'
+    if (hour < 17) return 'good afternoon'
+    return 'good evening'
+  }
+
   // calculate today's completion progress for the progress bar
   const activeGoals = goals.filter(g => g.status === 'active' || g.status === 'almost-over')
   const completedToday = activeGoals.filter(g => isCompletedToday(g.id))
@@ -52,7 +60,7 @@ export default function DashboardPage() {
       {/* greeting and progress bar */}
       <div style={{ padding: '24px 24px 16px' }}>
         <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#333333', marginBottom: '4px' }}>
-          good morning 👋
+          {getGreeting()}
         </h1>
         <p style={{ fontSize: '14px', color: '#999999', marginBottom: '16px' }}>
           {completedToday.length} of {activeGoals.length} goals done today
