@@ -213,13 +213,22 @@ export default function JournalPage() {
 
             {/* date and edit button row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <p style={{ fontSize: '12px', color: '#999999' }}>{entry.date}</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <p style={{ fontSize: '12px', color: '#999999' }}>{entry.date}</p>
+                {/* today badge highlights the most recent entry */}
+                {entry.date === today && (
+                  <span style={{
+                    fontSize: '10px', color: '#FE7F3C', fontWeight: 600,
+                    backgroundColor: '#fff0e8', padding: '2px 8px', borderRadius: '999px'
+                  }}>
+                    today
+                  </span>
+                )}
+              </div>
               {editingId !== entry.id && (
                 <button
                   onClick={() => handleStartEdit(entry)}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer', padding: '4px'
-                  }}>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
                   <PencilSimple size={16} color="#999999" />
                 </button>
               )}
