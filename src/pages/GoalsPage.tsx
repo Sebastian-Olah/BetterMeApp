@@ -148,15 +148,19 @@ const handleSaveEdit = () => {
               }}>
                 {goal.name}
               </span>
-              {goal.streak > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-              {/* fire icon from phosphor indicates an active streak */}
-              <Fire size={12} color="#FE7F3C" weight="fill" />
-              <p style={{ fontSize: '11px', color: '#FE7F3C', margin: 0 }}>
-                {goal.streak} day streak
-              </p>
-            </div>
-          )}
+              {goal.streak > 0 ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                  <Fire size={12} color="#FE7F3C" weight="fill" />
+                  <p style={{ fontSize: '11px', color: '#FE7F3C', margin: 0 }}>
+                    {goal.streak} day streak
+                  </p>
+                </div>
+              ) : (
+                // show a subtle label when no streak exists yet
+                <p style={{ fontSize: '11px', color: '#999999', margin: '2px 0 0' }}>
+                  no streak yet
+                </p>
+              )}
             </div>
           </div>
           <span style={{
