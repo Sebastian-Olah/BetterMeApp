@@ -161,6 +161,14 @@ const handleSaveEdit = () => {
                   no streak yet
                 </p>
               )}
+              {/* frequency badge shows daily or weekly at a glance */}
+              <span style={{
+                fontSize: '10px', color: '#999999', marginTop: '2px',
+                backgroundColor: '#f5f5f5', padding: '2px 6px', borderRadius: '999px',
+                display: 'inline-block'
+              }}>
+                {goal.frequency}
+              </span>
             </div>
           </div>
           <span style={{
