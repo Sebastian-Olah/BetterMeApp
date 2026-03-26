@@ -9,15 +9,18 @@ export default function SettingsPage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false)
   const [notificationTime, setNotificationTime] = useState('09:00')
 
-  // load saved preferences on mount
+ // load saved preferences on mount
+// merges with defaults in case new fields were added since last save   
   useEffect(() => {
     const prefs = getPreferences()
     setNotificationsEnabled(prefs.notificationsEnabled)
     setNotificationTime(prefs.notificationTime)
   }, [])
 
-  // schedules browser notifications based on accountability level
-  // low = 1 notification, medium = 2, high = 3, each 2 hours apart
+  // tested - low accountability fires 1 notification at chosen time
+  // medium fires 2 notifications 2 hours apart
+  // high fires 3 notifications 2 hours apart
+  // limitation confirmed - setTimeout requires browser tab to be open
   const scheduleNotification = (time: string) => {
     if (Notification.permission !== 'granted') return
 
