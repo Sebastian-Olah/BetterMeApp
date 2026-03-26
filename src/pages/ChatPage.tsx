@@ -134,6 +134,9 @@ export default function ChatPage() {
       // structured output pattern - the AI returns both a message and an optional action
      // the action field triggers real app changes silently without the user seeing any JSON
 
+      // tested - goal creation via chat confirmed working
+      // AI returns structured JSON with action field
+      // addGoal called silently, user only sees the message
       if (aiResponse.action?.type === 'createGoal') {
         const { addGoal } = await import('../utils/storage')
         addGoal({
