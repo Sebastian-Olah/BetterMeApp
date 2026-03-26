@@ -1,5 +1,10 @@
 import { getLogs } from './storage'
 
+// tested with:
+// - consecutive days - streak counts correctly
+// - gap in the middle - streak stops at the gap
+// - no completions - returns 0
+// - completed today only - returns 1
 // calculates how many consecutive days a goal has been completed
 // counts backwards from today and stops at the first gap
 export function calculateStreak(goalId: string): number {
