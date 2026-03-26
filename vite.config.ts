@@ -13,6 +13,10 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    // tested on Android Chrome
+    // app installs to home screen via ngrok HTTPS URL
+    // launches in standalone mode - no browser bar visible
+    // autoUpdate confirmed - new builds detected and applied automatically
     VitePWA({
       registerType: 'autoUpdate',
       // manifest defines how the app appears when installed on a device
