@@ -20,7 +20,10 @@ export type AIResponse = {
   } | null
 }
 
-// builds the full system prompt with tone, journal context and goals context injected
+// tested - strict tone produces shorter more direct responses
+// soft tone produces warmer more encouraging responses
+// tone preference read from localStorage before every message
+// changes take effect immediately on the next message sent
 export function buildSystemPrompt(tone: string = 'Balanced', journalContext?: string, goalsContext?: string): string {
   return `You are Max, a personal AI coach inside an app called Better Me.
 
