@@ -14,8 +14,8 @@ type Message = {
   timestamp: Date
 }
 
-// shared storage key - voice and chat screens both read and write to this key
-// so conversation history is continuous regardless of which screen the user is on
+// tested - shared history confirmed working across both screens
+// conversation is continuous regardless of which input method the user uses
 const CHAT_STORAGE_KEY = 'better_me_chat'
 
 const initialMessages: Message[] = [

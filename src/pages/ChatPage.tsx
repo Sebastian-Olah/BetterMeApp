@@ -14,7 +14,9 @@ type Message = {
   timestamp: Date
 }
 
-// shared storage key used by both chat and voice screens
+// tested - messages sent on voice screen appear in chat screen
+// messages sent on chat screen appear in voice screen
+// both screens read and write to better_me_chat localStorage key
 const CHAT_STORAGE_KEY = 'better_me_chat'
 
 // initial greeting shown when no history exists yet
