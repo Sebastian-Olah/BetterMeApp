@@ -71,8 +71,10 @@ export default function JournalPage() {
     setEditPhoto(undefined)
   }
 
-  // converts the selected image to a base64 string using FileReader
-  // base64 strings can be stored directly in localStorage alongside the entry
+  // tested on mobile - capture environment opens rear camera directly
+  // FileReader converts image to base64 string
+  // base64 stored in localStorage alongside entry content
+  // confirmed image displays correctly after page refresh
   const handlePhotoCapture = (
     e: React.ChangeEvent<HTMLInputElement>,
     mode: 'new' | 'edit'
