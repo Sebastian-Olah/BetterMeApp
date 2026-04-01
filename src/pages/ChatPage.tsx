@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { House, Target, ChatCircle, Notebook, Gear, Microphone, PaperPlaneTilt, Trash } from '@phosphor-icons/react'
+import { House, Target, ChatCircle, Notebook, Gear, Microphone, PaperPlaneTilt, Trash, ArrowRight } from '@phosphor-icons/react'
 import ReactMarkdown from 'react-markdown'
 import { sendMessage as sendToAI, buildSystemPrompt } from '../services/openai'
 import { getJournalEntries, getPreferences, getGoals } from '../utils/storage'
@@ -255,8 +255,12 @@ export default function ChatPage() {
       <div style={{ textAlign: 'center', paddingBottom: '8px' }}>
         <span
           onClick={() => navigate('/voice')}
-          style={{ fontSize: '13px', color: '#FE7F3C', cursor: 'pointer', fontWeight: 500 }}>
-          {'talk to me ->'}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '4px',
+            fontSize: '13px', color: '#FE7F3C', cursor: 'pointer', fontWeight: 500
+          }}>
+          talk to me
+          <ArrowRight size={14} color="#FE7F3C" weight="bold" aria-hidden />
         </span>
       </div>
 

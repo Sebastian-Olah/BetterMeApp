@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { House, Target, ChatCircle, Notebook, Gear, Fire } from '@phosphor-icons/react'// phosphor icons used as react components so colour and weight can be controlled via props
+import { House, Target, ChatCircle, Notebook, Gear, Fire, Check } from '@phosphor-icons/react'// phosphor icons used as react components so colour and weight can be controlled via props
                                                                               // svg file imports were tried first but had hardcoded fill colours that overrode css filters
 import { getGoals, addLog } from '../utils/storage'
 import { calculateStreak, isCompletedToday } from '../utils/streak'
@@ -158,7 +158,14 @@ export default function DashboardPage() {
                   backgroundColor: done ? '#f0f0f0' : '#FE7F3C',
                   color: done ? '#999999' : 'white'
                 }}>
-                {done ? 'done ✓' : 'complete'}
+                {done ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    done
+                    <Check size={14} color="#999999" weight="bold" aria-hidden />
+                  </span>
+                ) : (
+                  'complete'
+                )}
               </button>
             </div>
           )

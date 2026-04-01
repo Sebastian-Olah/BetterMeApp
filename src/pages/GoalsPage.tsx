@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { House, Target, ChatCircle, Notebook, Gear, Plus, Trash, Fire, PencilSimple } from '@phosphor-icons/react'
+import { House, Target, ChatCircle, Notebook, Gear, Plus, Trash, Fire, PencilSimple, Check } from '@phosphor-icons/react'
 import { calculateStreak, isCompletedToday } from '../utils/streak'
 import type { Goal } from '../types/index'
 import { getGoals, addGoal, updateGoal, deleteGoal, addLog } from '../utils/storage'
@@ -200,7 +200,14 @@ const handleSaveEdit = () => {
                   border: 'none', fontWeight: 600, fontSize: '14px',
                   cursor: completedToday ? 'default' : 'pointer'
                 }}>
-                {completedToday ? 'completed today ✓' : 'mark as complete'}
+                {completedToday ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                    completed today
+                    <Check size={16} color="#999999" weight="bold" aria-hidden />
+                  </span>
+                ) : (
+                  'mark as complete'
+                )}
               </button>
               <button
                 onClick={() => handleDelete(goal.id)}
@@ -210,7 +217,8 @@ const handleSaveEdit = () => {
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
                 <Trash size={16} color="#ff4444" />
-                <button
+              </button>
+              <button
                 onClick={() => handleStartEdit(goal)}
                 style={{
                   width: '44px', height: '44px', borderRadius: '999px',
@@ -218,7 +226,6 @@ const handleSaveEdit = () => {
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
                 <PencilSimple size={16} color="#333333" />
-              </button>
               </button>
             </div>
           </div>

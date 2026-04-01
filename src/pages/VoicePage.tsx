@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Microphone, Pause, X, Play, ArrowClockwise, PaperPlaneTilt, House, Target, ChatCircle, Notebook, Gear } from '@phosphor-icons/react'
+import { Microphone, Pause, X, Play, ArrowClockwise, PaperPlaneTilt, House, Target, ChatCircle, Notebook, Gear, ArrowLeft } from '@phosphor-icons/react'
 import ReactMarkdown from 'react-markdown'
 import { addGoal, getJournalEntries, getPreferences, getGoals } from '../utils/storage'
 import { calculateStreak } from '../utils/streak'
@@ -452,11 +452,13 @@ export default function VoicePage() {
       <span
         onClick={() => navigate('/chat')}
         style={{
-          textAlign: 'center', fontSize: '13px', color: '#FE7F3C',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+          width: '100%', textAlign: 'center', fontSize: '13px', color: '#FE7F3C',
           cursor: 'pointer', fontWeight: 500, paddingBottom: '8px',
           marginBottom: '70px'
         }}>
-        {'<- type to me'}
+        <ArrowLeft size={14} color="#FE7F3C" weight="bold" aria-hidden />
+        type to me
       </span>
 
       {/* bottom navigation */}

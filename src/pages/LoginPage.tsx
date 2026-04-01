@@ -1,115 +1,87 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { GoogleLogo, FacebookLogo } from '@phosphor-icons/react'
+import appleLogo from '../assets/apple.svg'
 
-// login screen — first point of contact for the user
-// social login buttons navigate directly to dashboard as auth is out of scope
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogin = () => {
-    setIsLoading(true)
-    // small delay to show the loading state before navigating
-    setTimeout(() => navigate('/personalisation'), 300)
+  const socialBtn: React.CSSProperties = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    gap: '10px', width: '100%', padding: '14px', borderRadius: '999px',
+    border: '1px solid #999999', backgroundColor: 'white',
+    color: '#333333', fontSize: '14px', fontWeight: 500, cursor: 'pointer',
+    marginBottom: '12px'
   }
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', minHeight: '100vh', backgroundColor: 'white',
-      padding: '40px 24px', maxWidth: '430px', margin: '0 auto'
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh',
+      backgroundColor: 'white', padding: '0 24px', maxWidth: '430px', margin: '0 auto' }}>
 
-      {/* logo and branding */}
-      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '28px', fontWeight: 700, color: '#333333' }}>Better</span>
-          <div style={{
-            backgroundColor: '#FE7F3C', borderRadius: '8px',
-            padding: '2px 10px'
-          }}>
-            <span style={{ fontSize: '28px', fontWeight: 700, color: 'white' }}>Me</span>
-          </div>
-        </div>
-        <p style={{ fontSize: '14px', color: '#999999' }}>
-          improve yourself on your own terms
-        </p>
-      </div>
+      {/* Logo */}
+<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '60px', marginBottom: '8px' }}>
+  <span style={{ fontSize: '40px', fontWeight: 'bold', color: '#333333', marginRight: '6px' }}>Better</span>
+  <div style={{ borderRadius: '50%', backgroundColor: '#FE7F3C',
+    padding: '6px 12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+    <span style={{ color: 'white', fontWeight: 'bold', fontSize: '37px' }}>Me</span>
+  </div>
+</div>
 
-      {/* main heading */}
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#333333', marginBottom: '8px' }}>
-          let's get started!
-        </h1>
-        <p style={{ fontSize: '14px', color: '#999999', lineHeight: '1.5' }}>
-          a new journey brings excitement, opportunities and actions — take the first step today.
-        </p>
-      </div>
+      {/* Tagline */}
+      <p style={{ textAlign: 'center', fontSize: '13px', color: '#999999', marginBottom: '40px' }}>
+        Improve yourself on your own terms
+      </p>
 
-      {/* social login buttons */}
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-        <button
-          onClick={handleLogin}
-          style={{
-            width: '100%', padding: '14px', borderRadius: '12px',
-            border: '1px solid #f0f0f0', backgroundColor: 'white',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: '12px', cursor: 'pointer', fontSize: '14px', color: '#333333',
-            fontWeight: 500
-          }}>
-          {/* google favicon loaded from public url */}
-          <img src="https://www.google.com/favicon.ico" width={18} height={18} alt="google" />
-          continue with Google
-        </button>
+      {/* Heading */}
+      <h1 style={{ fontSize: '26px', fontWeight: 'bold', textAlign: 'center', color: '#333333', marginBottom: '8px' }}>
+        Let's Get Started!
+      </h1>
+      <p style={{ textAlign: 'center', fontSize: '13px', color: '#999999', marginBottom: '32px', lineHeight: '1.6' }}>
+        A new journey brings excitement, opportunities and a chance to see this first step today.
+      </p>
 
-        <button
-          onClick={handleLogin}
-          style={{
-            width: '100%', padding: '14px', borderRadius: '12px',
-            border: '1px solid #f0f0f0', backgroundColor: 'white',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: '12px', cursor: 'pointer', fontSize: '14px', color: '#333333',
-            fontWeight: 500
-          }}>
-          {/* apple unicode symbol used as icon */}
-          <span style={{ fontSize: '18px' }}>🍎</span>
-          continue with Apple
-        </button>
-
-        <button
-          onClick={handleLogin}
-          style={{
-            width: '100%', padding: '14px', borderRadius: '12px',
-            border: '1px solid #f0f0f0', backgroundColor: 'white',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: '12px', cursor: 'pointer', fontSize: '14px', color: '#333333',
-            fontWeight: 500
-          }}>
-          <span style={{ fontSize: '18px' }}>📧</span>
-          continue with Email
-        </button>
-      </div>
-
-      {/* primary login button */}
-      <button
-        onClick={handleLogin}
-        style={{
-          width: '100%', padding: '16px', borderRadius: '999px',
-          backgroundColor: '#FE7F3C', border: 'none',
-          color: 'white', fontSize: '16px', fontWeight: 600,
-          cursor: 'pointer', marginBottom: '16px'
-        }}>
-        {isLoading ? 'loading...' : 'login'}
+      {/* Social buttons */}
+      <button style={socialBtn} onClick={() => navigate('/dashboard')}>
+        <GoogleLogo size={20} color="#333333" weight="regular" aria-hidden />
+        Continue with Google
       </button>
 
-      {/* register link */}
-      <p style={{ fontSize: '14px', color: '#999999' }}>
-        don't have an account?{' '}
-        <span
-          onClick={handleLogin}
-          style={{ color: '#FE7F3C', cursor: 'pointer', fontWeight: 500 }}>
-          register
+      <button style={socialBtn} onClick={() => navigate('/dashboard')}>
+        <img src={appleLogo} alt="" width={20} height={20} style={{ display: 'block' }} />
+        Continue with Apple
+      </button>
+
+      <button style={socialBtn} onClick={() => navigate('/dashboard')}>
+        <FacebookLogo size={20} color="#1877F2" weight="fill" aria-hidden />
+        Continue with Facebook
+      </button>
+
+      {/* Divider */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '8px 0 20px' }}>
+        <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e5e5' }} />
+        <span style={{ color: '#999999', fontSize: '12px' }}>or</span>
+        <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e5e5' }} />
+      </div>
+
+      {/* Login button */}
+      <button
+        onClick={() => navigate('/dashboard')}
+        style={{ width: '100%', padding: '16px', borderRadius: '999px', backgroundColor: '#FE7F3C',
+          color: 'white', fontWeight: 600, fontSize: '16px', border: 'none', cursor: 'pointer', marginBottom: '16px' }}>
+        Login
+      </button>
+
+      {/* Register */}
+      <p style={{ textAlign: 'center', fontSize: '13px', color: '#999999' }}>
+        Don't have an account?{' '}
+        <span onClick={() => navigate('/personalisation')}
+          style={{ color: '#FE7F3C', fontWeight: 600, cursor: 'pointer' }}>
+          Register
         </span>
+      </p>
+
+      {/* Privacy */}
+      <p style={{ textAlign: 'center', fontSize: '11px', color: '#999999', marginTop: 'auto', paddingBottom: '24px', paddingTop: '32px' }}>
+        You control what is tracked
       </p>
     </div>
   )
