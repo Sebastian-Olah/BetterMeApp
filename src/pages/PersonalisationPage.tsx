@@ -1,6 +1,3 @@
-export default function PersonalisationPage() {
-  return <div>Personalisation Page</div>
-}
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { savePreferences, getPreferences } from '../utils/storage'
