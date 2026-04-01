@@ -1,3 +1,15 @@
+// better me - final year project
+// author: Sebastian Olah K2207177
+// a personal AI coaching PWA built with React TypeScript and OpenAI API
+//
+// screens: login, personalisation, dashboard, chat, voice, goals, journal, settings
+// key features: AI goal creation, structured output, voice input, streak tracking, PWA
+// data: all stored in localStorage - no backend required
+//
+// to run: npm run dev
+// to build: npm run build
+// to test on phone: npm run build && npm run preview -- --host --port 3000 && npx ngrok http 3000
+
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import PersonalisationPage from './pages/PersonalisationPage'
