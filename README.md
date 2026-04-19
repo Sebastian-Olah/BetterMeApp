@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+Better Me
+A personal AI coaching app built as a Progressive Web App using React and TypeScript.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+About
+Better Me is my final year project for BSc Computer Science at Kingston University (K2207177).
 
-Currently, two official plugins are available:
+The app acts as a personal AI coach that helps users set goals through conversation, track daily completions, maintain streaks, write journal reflections and have voice or text conversations with an AI coach called Max.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+All data is stored locally on the device using localStorage. Nothing leaves the device except text sent to the OpenAI API.
 
-## React Compiler
+Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React + TypeScript
+- Vite
+- React Router v6
+- Tailwind CSS v4
+- OpenAI API (gpt-4o-mini)
+- Web Speech API
+- vite-plugin-pwa
+- Phosphor Icons
+- react-markdown
 
-## Expanding the ESLint configuration
+Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Clone the repo
+2. Run `npm install --legacy-peer-deps`
+3. Create a `.env` file in the root: VITE_OPENAI_API_KEY= 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
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+4. Run `npm run dev` to start on localhost:3000
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Testing on a Real Device
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. `npm run build`
+2. `npm run preview -- --host --port 3000`
+3. `npx ngrok http 3000` in a second terminal
+4. Open the ngrok URL on your phone in Chrome
+5. Tap Add to Home Screen to install as a PWA
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Author
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Sebastian Olah - K2207177 - Kingston University
