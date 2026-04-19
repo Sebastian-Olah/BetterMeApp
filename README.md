@@ -24,7 +24,7 @@ Setup
 
 1. Clone the repo
 2. Run `npm install --legacy-peer-deps`
-3. Create a `.env` file in the root: VITE_OPENAI_API_KEY= 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
+3. Create a `.env` file in the root: VITE_OPENAI_API_KEY= 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
 
 4. Run `npm run dev` to start on localhost:3000
 
